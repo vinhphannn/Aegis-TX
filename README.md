@@ -1,27 +1,41 @@
-# 🎮 AeroTX-OS (Dự án TX01)
+# AeroTX-OS — Custom RC Transmitter Firmware
 
-**AeroTX-OS** là hệ điều hành mã nguồn mở dành riêng cho tay cầm điều khiển (RC Transmitter) tự thiết kế, chạy trên vi điều khiển **ESP32**. Dự án hướng đến việc xây dựng một hệ thống truyền nhận sóng siêu trễ (Ultra-low latency) kết hợp cùng giao diện người dùng chuyên nghiệp.
+![Platform: ESP32](https://img.shields.io/badge/Platform-ESP32_Dual--Core-blue)
+![Radio: LoRa 433MHz](https://img.shields.io/badge/Radio-LoRa_RA--02_433MHz-orange)
+![RTOS: FreeRTOS](https://img.shields.io/badge/RTOS-FreeRTOS_Dual--Core-success)
 
-## 🚀 Đặc điểm kỹ thuật nổi bật
-- **Dual-core Architecture (FreeRTOS):**
-  - **Core 0:** Dành riêng (Dedicated) cho hệ thống Radio (CRSF/ELRS) đạt tần số quét 250Hz không gián đoạn.
-  - **Core 1:** Chạy hệ thống đồ họa UI (LVGL) và quản lý thẻ nhớ, đảm bảo không bao giờ lock tài nguyên sóng.
-- **Flight Modes Framework:** Chuyển đổi mượt mà giữa các chế độ Bay (Flight), Cài đặt (Menu), và Giả lập (Simulator BLE HID).
-- **Pro Features:** Trộn kênh (Mixer & Logic), cấu hình điểm chết (Expo/Rates), và bảng điều khiển Telemetry theo thời gian thực.
+Firmware tự phát triển cho tay cầm điều khiển RC (transmitter), xây dựng trên nền ESP32 chạy FreeRTOS hai nhân, sử dụng module LoRa RA-02 ở tần số 433MHz làm lớp vật lý cho đường truyền điều khiển. Dự án bao gồm cả phần cứng transmitter, module thu (receiver) riêng, và một tùy biến trên giao thức ExpressLRS (ELRS) để hoạt động ổn định trên băng tần LoRa.
 
-## 🛠️ Yêu cầu Build (Dành cho Developer)
-Dự án được viết bằng C/C++ và biên dịch trên nền tảng **ESP-IDF v5.x**.
+## Video demo
 
-```bash
-# Clone dự án
+https://github.com/user-attachments/assets/53d7025c-c662-4c51-ad10-2ab564fe2dbc
+
+---
+
+## Kiến trúc hệ thống
+
+- **Transmitter:** ESP32 hai nhân — một nhân xử lý đọc input (stick, switch) và giao tiếp radio, nhân còn lại xử lý giao diện/hiển thị và kết nối BLE, tránh tình trạng trễ input do tranh chấp tài nguyên.
+- **Đường truyền chính:** Giao thức ELRS tùy biến để chạy trên module LoRa RA-02 433MHz thay vì phần cứng ELRS gốc, đảm bảo tầm xa tốt hơn ở băng tần thấp.
+- **Receiver:** Module thu riêng, giải mã và xuất tín hiệu điều khiển tương thích với các flight controller sử dụng giao thức CRSF.
+- **Chế độ thứ hai — BLE Gamepad:** Tay cầm có thể chuyển sang chế độ kết nối BLE trực tiếp với PC, giả lập như một gamepad chuẩn (HID), cho phép dùng để luyện tập bay trên phần mềm simulator mà không cần thông qua flight controller thực.
+
+## Tính năng chính
+
+1. **Xử lý input thời gian thực:** Đọc stick/switch qua ADC, lọc nhiễu, ánh xạ (mapping) kênh có thể tùy chỉnh.
+2. **Tùy biến ELRS trên LoRa 433MHz:** Điều chỉnh tham số điều chế và định thời (timing) để giao thức ELRS hoạt động ổn định trên phần cứng LoRa RA-02, vốn không phải phần cứng gốc mà ELRS hỗ trợ sẵn.
+3. **Chế độ kép Transmitter / BLE Gamepad:** Chuyển đổi giữa điều khiển máy bay thật (qua radio) và điều khiển giả lập trên PC (qua BLE HID) chỉ bằng một thao tác chuyển chế độ trên tay cầm.
+4. **Kiến trúc dual-core FreeRTOS:** Tách biệt task input/radio và task giao diện/kết nối để đảm bảo độ trễ điều khiển ổn định.
+
+## Hướng dẫn build & nạp firmware
+
+\`\`\`bash
 git clone https://github.com/vinhphannn/AeroTX-OS.git
 cd AeroTX-OS
 
-# Cấu hình môi trường ESP-IDF (nếu đã cài đặt)
-. $HOME/esp/esp-idf/export.sh
+# Build và nạp bằng PlatformIO / Arduino-ESP32 (tuỳ toolchain repo đang dùng)
+pio run -t upload
+\`\`\`
 
-# Build & Flash
-idf.py set-target esp32
-idf.py build
-idf.py -p /dev/ttyUSB0 flash monitor
-```
+## Trạng thái dự án
+
+Đang trong quá trình hoàn thiện, các module chính (radio, receiver, BLE gamepad) đã hoạt động ổn định; đang tiếp tục cải thiện phạm vi phủ sóng và độ trễ điều khiển.
