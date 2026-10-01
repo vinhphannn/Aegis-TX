@@ -1,6 +1,6 @@
-# 🗺️ DỰ ÁN TX01 - KẾ HOẠCH NÂNG CẤP PHẦN CỨNG V2.0
+# 🗺️ DỰ ÁN Aegis-TX - KẾ HOẠCH NÂNG CẤP PHẦN CỨNG V2.0
 
-Tài liệu này mô tả chi tiết cách thiết kế lại sơ đồ đi dây cho tay điều khiển TX01 sau khi bổ sung thêm 2 cụm Gimbal (từ CT6B), 2 biến trở núm xoay, và module gộp kênh **CD74HC4067**.
+Tài liệu này mô tả chi tiết cách thiết kế lại sơ đồ đi dây cho tay điều khiển Aegis-TX sau khi bổ sung thêm 2 cụm Gimbal (từ CT6B), 2 biến trở núm xoay, và module gộp kênh **CD74HC4067**.
 
 ---
 

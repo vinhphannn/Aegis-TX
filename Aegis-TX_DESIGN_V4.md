@@ -1,4 +1,4 @@
-# 🦅 TX01 TRANSMITTER OS - PHÁC THẢO THIẾT KẾ v4.0 (ELITE)
+# 🦅 Aegis-TX TRANSMITTER OS - PHÁC THẢO THIẾT KẾ v4.0 (ELITE)
 
 Bản thiết kế này hợp nhất các ý tưởng từ đội ngũ kiến trúc sư và chuyên gia nhúng để xây dựng một nền tảng tay cầm điều khiển chuyên nghiệp chuẩn thương mại trên ESP32.
 
@@ -84,4 +84,4 @@ Thiết kế theo chuẩn EdgeTX với 6 nhóm chức năng chính:
 *   Hệ thống cảnh báo bằng âm thanh và rung.
 
 ---
-**TX01 v4.0 - Engineered for Excellence.**
+**Aegis-TX v4.0 - Engineered for Excellence.**

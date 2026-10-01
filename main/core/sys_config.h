@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * sys_config.h - TX01 Global Configuration
+ * sys_config.h - Aegis-TX Global Configuration
  * ==========================================================
  * Quản lý các cấu hình biên dịch và cờ bật/tắt tính năng.
  * Thay đổi số 1 thành 0 để tắt các log không cần thiết,

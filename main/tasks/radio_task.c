@@ -1,5 +1,5 @@
 /**
- * radio_task.c - TX01 Radio Control Task (ELRS / CRSF Version)
+ * radio_task.c - Aegis-TX Radio Control Task (ELRS / CRSF Version)
  * ==========================================================
  * ExpressLRS (CRSF Protocol).
  * Tốc độ baud: 420,000 bps.

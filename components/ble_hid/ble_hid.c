@@ -274,8 +274,8 @@ static void ble_hid_advertise(void) {
 
     // Gắn Tên Thiết Bị vào Scan Response để Windows Auto-Reconnect
     memset(&rsp_fields, 0, sizeof rsp_fields);
-    rsp_fields.name = (uint8_t *)"AeroTX FPV Gamepad";
-    rsp_fields.name_len = strlen("AeroTX FPV Gamepad");
+    rsp_fields.name = (uint8_t *)"Aegis-TX FPV Gamepad";
+    rsp_fields.name_len = strlen("Aegis-TX FPV Gamepad");
     rsp_fields.name_is_complete = 1;
     rc = ble_gap_adv_rsp_set_fields(&rsp_fields);
     if (rc != 0) {
@@ -364,7 +364,7 @@ static void ble_hid_on_sync(void) {
     ble_hs_cfg.sm_their_key_dist = BLE_SM_PAIR_KEY_DIST_ENC | BLE_SM_PAIR_KEY_DIST_ID;
 
     // Set Default Tên Thiết Bị
-    ble_svc_gap_device_name_set("AeroTX FPV Gamepad");
+    ble_svc_gap_device_name_set("Aegis-TX FPV Gamepad");
     ble_svc_gap_device_appearance_set(0x03C4); // Gamepad
 
     ble_hid_advertise();

@@ -1,4 +1,4 @@
-# AeroTX-OS — Custom RC Transmitter Firmware
+# Aegis-TX — Custom RC Transmitter Firmware
 
 ![Platform: ESP32](https://img.shields.io/badge/Platform-ESP32_Dual--Core-blue)
 ![Radio: LoRa 433MHz](https://img.shields.io/badge/Radio-LoRa_RA--02_433MHz-orange)
@@ -28,14 +28,20 @@ https://github.com/user-attachments/assets/53d7025c-c662-4c51-ad10-2ab564fe2dbc
 
 ## Hướng dẫn build & nạp firmware
 
-\`\`\`bash
-git clone https://github.com/vinhphannn/AeroTX-OS.git
-cd AeroTX-OS
+```bash
+git clone https://github.com/vinhphannn/Aegis-TX.git
+cd Aegis-TX
 
-# Build và nạp bằng PlatformIO / Arduino-ESP32 (tuỳ toolchain repo đang dùng)
-pio run -t upload
-\`\`\`
+# Sau khi kích hoạt ESP-IDF v5.1.6
+idf.py set-target esp32
+idf.py build
+idf.py -p PORT flash monitor
+```
 
 ## Trạng thái dự án
 
 Đang trong quá trình hoàn thiện, các module chính (radio, receiver, BLE gamepad) đã hoạt động ổn định; đang tiếp tục cải thiện phạm vi phủ sóng và độ trễ điều khiển.
+
+## Firmware khôi phục
+
+`stable_checkpoint/` lưu bản firmware TX01 trước khi đổi tên thành Aegis-TX. Giữ nguyên binary và tên file trong checkpoint để bảo toàn khả năng khôi phục; firmware build mới mang tên `Aegis-TX.bin`.

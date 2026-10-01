@@ -5,7 +5,7 @@
 #include "ui_display.h"
 #include <string.h>
 
-static const char *TAG = "TX01_MAIN";
+static const char *TAG = "AEGIS_TX_MAIN";
 
 // Global Definitions
 QueueHandle_t sensor_queue = NULL;
@@ -23,7 +23,7 @@ extern esp_err_t storage_load_calib(CalibData_t *data);
 extern esp_err_t storage_load_model(uint8_t id, ModelConfig_t *model);
 
 void app_main(void) {
-    ESP_LOGI(TAG, ">>> Booting TX01 Ground Controller v1.6 (V3.2 Architecture) <<<");
+    ESP_LOGI(TAG, ">>> Booting Aegis-TX Ground Controller v1.6 (V3.2 Architecture) <<<");
 
     // 1. Storage & Mutex
     storage_init();

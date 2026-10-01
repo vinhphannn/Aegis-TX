@@ -1,6 +1,6 @@
-# 🛠️ Nhật Ký Debug ESP32 BLE HID Gamepad (AeroTX-OS)
+# 🛠️ Nhật Ký Debug ESP32 BLE HID Gamepad (Aegis-TX)
 
-Tài liệu này lưu lại những phát hiện quan trọng nhất trong quá trình phát triển tính năng giả lập (BLE Simulator) cho tay cầm AeroTX-OS. Đây là những "bí mật sâu kín" của hệ điều hành Windows 11 và ESP-IDF (NimBLE) mà chúng ta đã phải đổ rất nhiều mồ hôi để tìm ra.
+Tài liệu này lưu lại những phát hiện quan trọng nhất trong quá trình phát triển tính năng giả lập (BLE Simulator) cho tay cầm Aegis-TX. Đây là những "bí mật sâu kín" của hệ điều hành Windows 11 và ESP-IDF (NimBLE) mà chúng ta đã phải đổ rất nhiều mồ hôi để tìm ra.
 
 ---
 
@@ -10,7 +10,7 @@ Tay cầm kết nối với Windows, nhưng bị kẹt ở chữ "Connecting..."
 
 **Nguyên nhân gốc rễ (Root Cause):**
 Khi sử dụng **Secure Connections (ECDH)** để thiết lập Pairing (Bonding), ESP32 cần một lượng lớn CPU để giải bài toán mã hóa đường cong elliptic.
-Tuy nhiên, trong kiến trúc của AeroTX, `nimble_host_task` và `sensor_task` được cấp phát **cùng một mức độ ưu tiên (Priority = 15)** trên Core 0. 
+Tuy nhiên, trong kiến trúc của Aegis-TX, `nimble_host_task` và `sensor_task` được cấp phát **cùng một mức độ ưu tiên (Priority = 15)** trên Core 0.
 Vì `sensor_task` liên tục đọc ADC và xử lý I2C/SPI với tần số rất cao, nó đã chiếm đoạt (starve) gần hết CPU của NimBLE. Do đó, thuật toán mã hóa chạy quá chậm và vượt quá mốc thời gian giới hạn 10 giây (SMP Timeout) của Windows. Quá hạn, Windows bực mình và ngắt kết nối.
 
 **Cách khắc phục:**
@@ -64,7 +64,7 @@ Nếu ta chuyển đổi tịnh tiến (Map) thẳng từ PWM sang HID thì kế
 - Trục Y (Throttle, Pitch) được truyền cờ `invert = true` để ESP32 chủ động lật ngược con số `(65535 - mapped)` ngay từ dưới phần cứng. Kết quả là mọi phần mềm trên Windows đều nhận diện đúng mà không cần mất công calibrate.
 
 ---
-*Tài liệu được đúc kết từ hàng chục lần test thực tế trên AeroTX-OS.*
+*Tài liệu được đúc kết từ hàng chục lần test thực tế trên Aegis-TX.*
 
 
 ## ?? 5. L?i: Payload Length Mismatch (S? kh�c bi?t t? huy?t gi?a USB HID v� BLE HID)

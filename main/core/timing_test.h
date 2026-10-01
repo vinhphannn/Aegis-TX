@@ -1,5 +1,5 @@
 /**
- * timing_test.h - TX01 System Health Monitor
+ * timing_test.h - Aegis-TX System Health Monitor
  * ============================================
  * Không cần phần cứng đặc biệt. Chỉ cần mở Serial Monitor (115200 baud).
  *
@@ -75,7 +75,7 @@ static inline void timing_end(int id)
 static inline void timing_report(void)
 {
     esp_log_write(ESP_LOG_INFO, "TIMING", "\n");
-    esp_log_write(ESP_LOG_INFO, "TIMING", "╔══ TX01 TIMING REPORT ══════════════════════════╗\n");
+    esp_log_write(ESP_LOG_INFO, "TIMING", "╔══ Aegis-TX TIMING REPORT ══════════════════════════╗\n");
     for (int i = 0; i < _timing_count; i++) {
         TimingMarker_t *m = &_timing_markers[i];
         if (m->count == 0) continue;

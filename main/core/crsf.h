@@ -5,7 +5,7 @@
 #include "core/sys_state.h"
 
 /**
- * CRSF Protocol Definitions for TX01
+ * CRSF Protocol Definitions for Aegis-TX
  * =================================
  * Based on ExpressLRS/Crossfire standard.
  * UART Speed: 420,000 bps

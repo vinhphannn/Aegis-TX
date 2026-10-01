@@ -52,12 +52,12 @@ jobs:
         run: |
           mkdir release_assets
           # ESP-IDF tạo ra các file ở thư mục build/, ta cần gom cả bootloader và partition table
-          cp build/TX01.bin release_assets/
+          cp build/Aegis-TX.bin release_assets/
           cp build/bootloader/bootloader.bin release_assets/
           cp build/partition_table/partition-table.bin release_assets/
           cp build/flasher_args.json release_assets/
           cd release_assets
-          zip -r ../AeroTX-OS_Firmware.zip .
+          zip -r ../Aegis-TX_Firmware.zip .
 
       - name: Create Release & Upload Assets
         uses: softprops/action-gh-release@v1
@@ -65,7 +65,7 @@ jobs:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: |
-            ## 🎮 AeroTX-OS (TX01) - Phiên bản ${{ steps.tag_version.outputs.new_tag }}
+            ## 🎮 Aegis-TX - Phiên bản ${{ steps.tag_version.outputs.new_tag }}
             📅 **Thời gian phát hành:** ${{ env.current_date }}
             
             ### 📝 Tác giả ghi chú
@@ -77,13 +77,13 @@ jobs:
             ${{ steps.tag_version.outputs.changelog }}
             
             ### 📦 Assets included (Các file để nạp):
-            - `TX01.bin`: App Firmware chính.
+            - `Aegis-TX.bin`: App Firmware chính.
             - `bootloader.bin`: Bootloader của ESP32.
             - `partition-table.bin`: Bảng phân vùng bộ nhớ (NVS/App).
             - Để nạp cho mạch tay cầm, bạn có thể dùng **Espressif Flash Download Tool** với thông số ghi trong `flasher_args.json` hoặc flash thẳng file Zip bằng Tool.
           draft: false
           prerelease: false
           files: |
-            AeroTX-OS_Firmware.zip
+            Aegis-TX_Firmware.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

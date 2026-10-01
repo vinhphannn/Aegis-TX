@@ -45,7 +45,7 @@ static const char *TAG = "HAL_INPUT";
 
 static adc_oneshot_unit_handle_t s_adc_handle = NULL;
 
-// Chọn kênh MUX và chuẩn bị đọc (Settle cực ngắn vì board TX01 dùng dây ngắn)
+// Chọn kênh MUX và chuẩn bị đọc (Settle cực ngắn vì board Aegis-TX dùng dây ngắn)
 static inline void mux_select(uint8_t ch)
 {
     gpio_set_level(MUX_S0_PIN, (ch >> 0) & 0x01);
