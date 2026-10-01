@@ -1,6 +1,7 @@
 #include "core/sys_state.h"
 #include "core/hal_input.h"   // HAL v5.0 - thay thế rc_input
 #include "esp_log.h"
+#include "esp_app_desc.h"
 #include "nvs_flash.h"
 #include "ui_display.h"
 #include <string.h>
@@ -23,7 +24,7 @@ extern esp_err_t storage_load_calib(CalibData_t *data);
 extern esp_err_t storage_load_model(uint8_t id, ModelConfig_t *model);
 
 void app_main(void) {
-    ESP_LOGI(TAG, ">>> Booting Aegis-TX Ground Controller v1.6 (V3.2 Architecture) <<<");
+    ESP_LOGI(TAG, ">>> Booting Aegis-TX %s <<<", esp_app_get_description()->version);
 
     // 1. Storage & Mutex
     storage_init();

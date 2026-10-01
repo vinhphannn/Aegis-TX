@@ -6,6 +6,12 @@
 
 Firmware tự phát triển cho tay cầm điều khiển RC (transmitter), xây dựng trên nền ESP32 chạy FreeRTOS hai nhân, sử dụng module LoRa RA-02 ở tần số 433MHz làm lớp vật lý cho đường truyền điều khiển. Dự án bao gồm cả phần cứng transmitter, module thu (receiver) riêng, và một tùy biến trên giao thức ExpressLRS (ELRS) để hoạt động ổn định trên băng tần LoRa.
 
+## Cập nhật firmware
+
+Mở **[Aegis Hub](https://vinhphannn.github.io/Aegis-TX/)** để chọn phiên bản và flash Aegis-TX qua USB trên trình duyệt có Web Serial, hoặc tải firmware Aegis FC. Các bản beta được tách riêng và cần xác nhận trước khi nạp.
+
+Xem [quy trình phát hành và kiểm thử](docs/RELEASING.md) cho CI/CD, cấu trúc gói và cách chạy Hub cục bộ.
+
 ## Video demo
 
 https://github.com/user-attachments/assets/53d7025c-c662-4c51-ad10-2ab564fe2dbc

@@ -1,0 +1,17 @@
+{
+  "name": "aegis-hub",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:web": "node tools/build_web.mjs",
+    "test": "npm run build:web && playwright test",
+    "preview": "npm run build:web && python3 -m http.server 4173 --bind 127.0.0.1 --directory web"
+  },
+  "dependencies": {
+    "esp-web-tools": "10.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

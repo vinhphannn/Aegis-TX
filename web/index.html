@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111b24">
+  <meta name="description" content="Firmware và công cụ cập nhật cho tay điều khiển Aegis-TX và Aegis FC.">
+  <title>Aegis Hub — Firmware & thiết bị</title>
+  <link rel="icon" href="./mark.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./"><img src="./mark.svg" alt="" width="30" height="34"> AEGIS <span>HUB</span></a><a class="source" href="https://github.com/vinhphannn/Aegis-TX">Mã nguồn ↗</a></header>
+  <main>
+    <section class="intro"><span class="eyebrow">AEGIS ECOSYSTEM / FIRMWARE CENTER</span><h1>Sẵn sàng cho<br>chuyến bay tiếp theo.</h1><p>Chọn thiết bị, tìm phiên bản phù hợp và cập nhật firmware của bạn.</p></section>
+    <div class="workspace">
+      <aside class="devices" aria-label="Thiết bị"><p class="eyebrow">01 / CHỌN THIẾT BỊ</p>
+        <button class="device active" id="tx-tab" aria-pressed="true"><span class="device-icon">TX</span><span><strong>Aegis-TX</strong><small>Tay điều khiển · ESP32</small></span><span class="arrow">↗</span></button>
+        <button class="device" id="fc-tab" aria-pressed="false"><span class="device-icon">FC</span><span><strong>Aegis FC</strong><small>Flight controller · PX4</small></span><span class="arrow">↗</span></button>
+        <div class="aside-note"><span class="dot"></span><p>Firmware từ GitHub Releases.<br>Kiểm tra toàn vẹn trước khi nạp.</p></div>
+      </aside>
+      <section class="panel" aria-labelledby="device-title">
+        <div class="panel-heading"><div><p class="eyebrow">02 / FIRMWARE</p><h2 id="device-title">Aegis-TX</h2></div><span class="pill" id="capability">USB FLASH</span></div>
+        <p class="muted" id="device-description">ESP32 • Phần cứng TX01 hiện tại</p>
+        <div class="filters"><label>Kênh phát hành<select id="channel"><option value="stable">Stable — đã thử trên phần cứng</option><option value="beta">Beta — dành cho thử nghiệm</option></select></label><label>Phiên bản<select id="version" disabled><option>Đang tải…</option></select></label></div>
+        <p id="catalog-status" role="status">Đang tải danh sách firmware…</p>
+        <div id="release-detail" hidden>
+          <div class="release-summary"><span class="version-name" id="version-name"></span><span id="release-date" class="muted"></span></div>
+          <div class="release-meta"><span id="test-status"></span><a id="release-link">Xem trên GitHub ↗</a></div>
+          <details><summary>Thay đổi trong phiên bản này</summary><pre id="notes"></pre></details>
+          <section id="tx-controls">
+            <div class="notice"><strong>Cấu hình & calibration</strong><p>Nạp từng vùng firmware, giữ vùng dữ liệu với sơ đồ phân vùng hiện tại. Trong hộp thoại nạp, để <b>Erase device</b> tắt nếu muốn giữ dữ liệu. Xóa thiết bị sẽ mất model và calibration. Hạ phiên bản có thể không tương thích với dữ liệu đang lưu.</p></div>
+            <label class="check"><input id="board-confirm" type="checkbox"><span>Tôi đang kết nối đúng Aegis-TX dùng ESP32, phần cứng TX01. Nhận diện chip không xác nhận được model tay điều khiển.</span></label>
+            <label class="check" id="beta-confirm-row" hidden><input id="beta-confirm" type="checkbox"><span>Tôi hiểu đây là bản beta và sẽ kiểm tra stick, calibration, BLE và radio trước khi sử dụng.</span></label>
+            <div class="actions"><button id="prepare" class="primary" disabled>Kiểm tra firmware</button><div id="install-host" hidden></div><a id="download" class="secondary" download>Tải gói ZIP ↓</a></div>
+            <p id="flash-status" class="muted" role="status"></p>
+            <p id="browser-status" class="muted"></p>
+          </section>
+          <section id="fc-controls" hidden><p>Flash trực tiếp cho FC đang chờ kiểm chứng bootloader. Tải đúng firmware Aegis FC v1 để nạp bằng QGroundControl.</p><div class="actions"><a id="fc-download" class="primary" download>Tải firmware .px4 ↓</a></div><p class="checksum" id="fc-checksum"></p></section>
+        </div>
+        <div id="empty-state" hidden><span class="empty-icon">↥</span><h3 id="empty-title">Chưa có bản phát hành</h3><p id="empty-copy"></p><a id="all-releases" href="https://github.com/vinhphannn/Aegis-TX/releases">Xem các bản trên GitHub ↗</a></div>
+      </section>
+    </div>
+    <section class="guide"><div><p class="eyebrow">03 / KẾT NỐI & CẬP NHẬT</p><h2>Một kết nối USB. <br>Firmware của bạn.</h2></div><ol id="tx-guide"><li><b>Chuẩn bị kết nối</b><span>Dùng cáp USB có truyền dữ liệu. Đóng serial monitor hoặc ứng dụng đang dùng cổng USB.</span></li><li><b>Chọn đúng firmware</b><span>Chọn kênh và phiên bản. Kiểm tra firmware, rồi kết nối USB qua Chrome hoặc Edge trên máy tính.</span></li><li><b>Nạp và kiểm tra</b><span>Giữ kết nối tới khi công cụ báo hoàn tất. Nếu không vào được chế độ nạp, giữ BOOT khi kết nối. Sau khởi động, kiểm tra stick và calibration.</span></li></ol><ol id="fc-guide" hidden><li><b>Sao lưu thông số</b><span>Lưu parameters và tháo cánh quạt trước khi cập nhật FC.</span></li><li><b>Nạp bằng QGroundControl</b><span>Vehicle Setup → Firmware → Advanced settings → Custom firmware. Chọn file .px4 dành cho Aegis FC v1.</span></li><li><b>Xác minh thiết bị</b><span>Kiểm tra phiên bản, cảm biến và calibration sau khi nạp. <a href="https://docs.px4.io/main/en/config/firmware">Hướng dẫn PX4 ↗</a></span></li></ol></section>
+  </main>
+  <footer><span>AEGIS / BUILT TO FLY</span><span>TX & FC · Một hệ sinh thái.</span></footer>
+</body>
+</html>

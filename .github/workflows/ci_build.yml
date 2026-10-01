@@ -1,29 +1,42 @@
 name: CI Build Check
-
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "main", "master" ]
-
+    branches: [main, master]
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
-  build:
-    name: Build ESP32 Firmware
+  tooling:
     runs-on: ubuntu-22.04
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Cache ESP-IDF
-        uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          path: ~/.espressif
-          key: ${{ runner.os }}-esp-idf
-
-      - name: Build with ESP-IDF
+          node-version: '22'
+          cache: npm
+      - run: python3 -m unittest discover -s tools/tests -v
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set development version before build
+        run: python3 tools/prepare_release.py --development
+      - name: Build and validate firmware package
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.1.6
           target: esp32
-          path: '.'
+          command: idf.py build && python tools/firmware.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Aegis-TX-${{ github.sha }}
+          path: dist/Aegis-TX_Firmware.zip
+          if-no-files-found: error
+          retention-days: 14

@@ -1,0 +1,53 @@
+name: Deploy Aegis Hub
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', 'tools/**', 'package*.json', '.github/workflows/deploy_hub.yml']
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Release Firmware']
+    types: [completed]
+  schedule:
+    - cron: '23 3 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: python3 -m unittest discover -s tools/tests -v
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - name: Download and verify released firmware
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 tools/build_hub.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-22.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

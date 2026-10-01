@@ -1,89 +1,98 @@
-name: Auto Release Firmware
-
+name: Release Firmware
 on:
   workflow_dispatch:
     inputs:
-      bump_type:
-        description: 'Loại phiên bản (patch: sửa lỗi, minor: thêm tính năng, major: bản lớn)'
+      version:
+        description: 'Version: v0.2.0-beta.1 or v0.2.0'
         required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
-      custom_notes:
-        description: 'Ghi chú thêm cho phiên bản này (nếu có)'
-        required: false
         type: string
-
+      channel:
+        description: Release channel
+        required: true
+        default: beta
+        type: choice
+        options: [beta, stable]
+      hardware_tested:
+        description: 'Confirmed: tested sticks, calibration, BLE and radio on this hardware (required for stable)'
+        default: false
+        type: boolean
+      notes:
+        description: Release notes
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: firmware-release
+  cancel-in-progress: false
 jobs:
-  build-and-release:
-    name: Build & Auto Release
+  release:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-22.04
     permissions:
-      contents: write # Quyền tạo Tag và Release
-
+      contents: write
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 
-
-      - name: Build Firmware (ESP-IDF)
+          fetch-depth: 0
+      - name: Validate version and channel before building
+        id: version
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_CHANNEL: ${{ inputs.channel }}
+          HARDWARE_TESTED: ${{ inputs.hardware_tested }}
+        run: python3 tools/prepare_release.py
+      - name: Reject existing release or tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          if git rev-parse --verify "refs/tags/$TAG" >/dev/null 2>&1; then
+            echo 'Tag already exists; choose a new version.' >&2
+            exit 1
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo 'Release already exists; choose a new version.' >&2
+            exit 1
+          fi
+      - name: Test release tooling and Hub
+        run: python3 -m unittest discover -s tools/tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - name: Build once and validate distributable
         uses: espressif/esp-idf-ci-action@v1
         with:
           esp_idf_version: v5.1.6
           target: esp32
-          path: '.'
-
-      - name: Tự động Tăng Version & Tạo Tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.1
+          command: idf.py build && python tools/firmware.py
+      - uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: ${{ github.event.inputs.bump_type }}
-
-      - name: Lấy thời gian hiện tại
-        id: date
-        run: echo "current_date=$(date +'%Y-%m-%d %H:%M:%S %Z')" >> $GITHUB_ENV
-
-      - name: Gom nhóm file nạp ESP32 (Create Archive)
-        run: |
-          mkdir release_assets
-          # ESP-IDF tạo ra các file ở thư mục build/, ta cần gom cả bootloader và partition table
-          cp build/Aegis-TX.bin release_assets/
-          cp build/bootloader/bootloader.bin release_assets/
-          cp build/partition_table/partition-table.bin release_assets/
-          cp build/flasher_args.json release_assets/
-          cd release_assets
-          zip -r ../Aegis-TX_Firmware.zip .
-
-      - name: Create Release & Upload Assets
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: |
-            ## 🎮 Aegis-TX - Phiên bản ${{ steps.tag_version.outputs.new_tag }}
-            📅 **Thời gian phát hành:** ${{ env.current_date }}
-            
-            ### 📝 Tác giả ghi chú
-            ${{ github.event.inputs.custom_notes || 'Không có ghi chú thêm.' }}
-            
-            ---
-            
-            ### 🔄 Lịch sử thay đổi
-            ${{ steps.tag_version.outputs.changelog }}
-            
-            ### 📦 Assets included (Các file để nạp):
-            - `Aegis-TX.bin`: App Firmware chính.
-            - `bootloader.bin`: Bootloader của ESP32.
-            - `partition-table.bin`: Bảng phân vùng bộ nhớ (NVS/App).
-            - Để nạp cho mạch tay cầm, bạn có thể dùng **Espressif Flash Download Tool** với thông số ghi trong `flasher_args.json` hoặc flash thẳng file Zip bằng Tool.
-          draft: false
-          prerelease: false
-          files: |
-            Aegis-TX_Firmware.zip
+          name: release-${{ steps.version.outputs.tag }}
+          path: dist/Aegis-TX_Firmware.zip
+          if-no-files-found: error
+      - name: Publish completed package
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          CHANNEL: ${{ inputs.channel }}
+          RELEASE_NOTES: ${{ inputs.notes }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          notes = os.environ['RELEASE_NOTES'] or 'Aegis-TX firmware release.'
+          notes += '\n\nSource commit: ' + os.environ['GITHUB_SHA']
+          notes += '\nChannel: ' + os.environ['CHANNEL']
+          notes += '\n\nDownload the ZIP for firmware, manifest, board metadata and SHA256SUMS.\n'
+          Path('release-notes.md').write_text(notes)
+          PY
+          flags=()
+          if [ "$CHANNEL" = beta ]; then flags+=(--prerelease); fi
+          gh release create "$TAG" dist/Aegis-TX_Firmware.zip \
+            --target "$GITHUB_SHA" --title "Aegis-TX $TAG" \
+            --notes-file release-notes.md --draft "${flags[@]}"
+          gh release edit "$TAG" --draft=false

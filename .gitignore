@@ -76,3 +76,12 @@ Desktop.ini
 *.workspace # General workspace files, can be from various tools
 *.suo       # Visual Studio Solution User Options
 *.sln.docstates # Visual Studio
+
+# Generated release metadata
+version.txt
+release-request.json
+web/vendor/
+site/
+node_modules/
+test-results/
+playwright-report/
