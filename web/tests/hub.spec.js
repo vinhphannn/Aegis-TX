@@ -43,6 +43,11 @@ test('requires board and beta confirmation, verifies bytes, then enables real bu
   expect(result).toEqual({ erase: true, binary: binary.toString() });
   await page.locator('#board-confirm').uncheck();
   await expect(page.locator('esp-web-install-button button[slot=activate]')).toBeDisabled();
+  await page.locator('#board-confirm').check();
+  await page.evaluate(() => { window.portRequests = 0; navigator.serial.requestPort = async () => { window.portRequests++; return null; }; });
+  await page.locator('esp-web-install-button button[slot=activate]').click();
+  await page.evaluate(() => customElements.whenDefined('ewt-install-dialog'));
+  expect(await page.evaluate(() => window.portRequests)).toBe(1);
   await page.locator('#channel').selectOption('stable');
   await expect(page.locator('esp-web-install-button')).toHaveCount(0);
 });

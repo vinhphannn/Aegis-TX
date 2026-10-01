@@ -21,7 +21,7 @@ The first Hub-compatible board profile is `aegis-tx-esp32`, hardware revision `t
 
 The installer asks before erasing the device (`new_install_prompt_erase: true`). Leave **Erase device** unchecked to keep data partitions. Keeping bytes does not guarantee data compatibility when downgrading or changing partition layouts. Erasing loses model/calibration data. The first implementation does not back up NVS through the browser or automatically identify the TX board revision; the user confirms the hardware explicitly.
 
-Hub verifies bytes before creating the USB installer, then hands the verified bytes to ESP Web Tools through Blob URLs. The pinned dependency is bundled and hosted on Pages with the firmware. No runtime CDN or GitHub API request is required from the browser. The installer itself handles USB, flashing progress and verification errors. Hardware flashing, data retention and recovery still require testing on the actual TX.
+Hub verifies bytes before creating the USB installer, then hands the verified bytes to ESP Web Tools through Blob URLs. The pinned dependency is bundled and hosted on Pages with the firmware. No runtime CDN or GitHub API request is required from the browser. The installer handles USB, flashing progress and write errors. SHA-256 verifies downloaded bytes before writing; this integration does not perform a separate full readback of device flash. Hardware flashing, data retention and recovery still require testing on the actual TX.
 
 Legacy releases without schema-1 metadata remain available on GitHub and are not guessed into the web installer. CI development packages remain artifacts and are not published to the Hub catalog.
 
