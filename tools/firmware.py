@@ -26,8 +26,10 @@ def safe_path(root, name):
     if not name or p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name:
         raise ValueError(f'Unsafe package path: {name}')
     target = (Path(root) / str(p)).resolve()
-    if not target.is_relative_to(Path(root).resolve()):
-        raise ValueError(f'Path escapes package: {name}')
+    try:
+        target.relative_to(Path(root).resolve())
+    except ValueError:
+        raise ValueError(f'Path escapes package: {name}') from None
     return target
 
 
@@ -36,13 +38,14 @@ def digest(path):
 
 
 def release_version(version, channel, tested=False):
-    if not VERSION.fullmatch(version) or len(version.removeprefix('v')) > 31:
+    normalized = version[1:] if version.startswith('v') else version
+    if not VERSION.fullmatch(version) or len(normalized) > 31:
         raise ValueError('Use vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH-beta.N (max 31 bytes without v)')
     if (channel == 'beta') != ('-beta.' in version) or channel not in ('stable', 'beta'):
         raise ValueError('Version suffix must match channel')
     if channel == 'stable' and not tested:
         raise ValueError('Stable requires hardware test confirmation')
-    return version.removeprefix('v')
+    return normalized
 
 
 def prepare(version, channel, commit, tested=False):

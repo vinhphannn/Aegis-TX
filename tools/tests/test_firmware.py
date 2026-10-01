@@ -1,5 +1,7 @@
 import base64
 import json
+import importlib.util
+import shutil
 import struct
 import sys
 import tempfile
@@ -8,7 +10,7 @@ import zipfile
 import zlib
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from firmware import package, json_write, prepare, safe_path
+from firmware import package, json_write, prepare, safe_path, normalize_bootloader
 from build_hub import import_tx, import_fc
 
 
@@ -52,6 +54,16 @@ class Packages(unittest.TestCase):
         self.assertEqual([p['offset'] for p in manifest['builds'][0]['parts']], [0x1000, 0x8000, 0x10000])
         for name in self.args['flash_files'].values():
             self.assertTrue((dest / name).is_file())
+
+    @unittest.skipUnless(importlib.util.find_spec('esptool'), 'requires ESP-IDF esptool')
+    def test_real_bootloader_normalization_keeps_segment_size(self):
+        source = Path(__file__).resolve().parents[2] / 'stable_checkpoint/bootloader.bin'
+        target = self.root / 'real-bootloader.bin'
+        shutil.copyfile(source, target)
+        normalize_bootloader(target, 0x1000, self.args['flash_settings'])
+        self.assertEqual(target.stat().st_size, source.stat().st_size)
+        self.assertEqual(target.read_bytes()[0], 0xe9)
+        self.assertEqual(target.read_bytes()[2:4], bytes([2, 0x10]))  # DIO, 2 MB, 40 MHz
 
     def test_missing_binary_rejected(self):
         (self.build / 'Aegis-TX.bin').unlink()

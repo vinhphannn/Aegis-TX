@@ -68,7 +68,7 @@ jobs:
         with:
           esp_idf_version: v5.1.6
           target: esp32
-          command: idf.py build && python tools/firmware.py
+          command: python -m unittest discover -s tools/tests -v && idf.py build && python tools/firmware.py
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ steps.version.outputs.tag }}
