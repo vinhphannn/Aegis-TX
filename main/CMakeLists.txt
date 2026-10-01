@@ -9,4 +9,5 @@ idf_component_register(SRCS "main.c"
                             "tasks/radio_task.c"
                             "tasks/ui_task.c"
                     INCLUDE_DIRS "." "core" "tasks"
-                    REQUIRES rc_input ui_display ble_hid nvs_flash)
+                    REQUIRES rc_input ui_display ble_hid nvs_flash
+                    PRIV_REQUIRES esp_app_format)
