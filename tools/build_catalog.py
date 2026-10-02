@@ -1,4 +1,4 @@
-"""Mirror validated release packages onto Pages so flashing never depends on cross-origin fetches."""
+"""Publish the firmware catalog and binaries consumed by aegis-web."""
 import argparse
 import base64
 import json
@@ -97,8 +97,8 @@ def import_fc(path, release):
                 sha256=digest(path), board_id=1179, notes=release['body'] or '')
 
 
-def build_site(source, output, empty=False):
-    shutil.copytree(source, output, ignore=shutil.ignore_patterns('tests'))
+def build_catalog(output, empty=False):
+    Path(output).mkdir(parents=True, exist_ok=False)
     catalog = dict(schema_version=1, tx=[], fc=[])
     if not empty:
         for release in releases(TX_REPO):
@@ -133,12 +133,17 @@ def build_site(source, output, empty=False):
         catalog[device].sort(key=lambda x: x['published_at'], reverse=True)
     json_write(Path(output) / 'catalog.json', catalog)
     (Path(output) / '.nojekyll').touch()
+    # Keep old bookmarks useful without maintaining a second website.
+    (Path(output) / 'index.html').write_text(
+        '<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<meta http-equiv="refresh" content="0;url=https://vinhphannn.github.io/aegis-web/configurator/">'
+        '<title>AEGIS Configurator</title>'
+        '<a href="https://vinhphannn.github.io/aegis-web/configurator/">Open AEGIS Configurator</a></html>')
 
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--source', default='web')
     p.add_argument('--output', default='site')
-    p.add_argument('--empty', action='store_true', help='Local preview without downloading releases')
+    p.add_argument('--empty', action='store_true', help='Create an empty catalog without downloading releases')
     args = p.parse_args()
-    build_site(args.source, args.output, args.empty)
+    build_catalog(args.output, args.empty)

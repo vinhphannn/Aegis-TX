@@ -54,15 +54,8 @@ jobs:
             echo 'Release already exists; choose a new version.' >&2
             exit 1
           fi
-      - name: Test release tooling and Hub
+      - name: Test release tooling
         run: python3 -m unittest discover -s tools/tests -v
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: npm
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: npm test
       - name: Build once and validate distributable
         uses: espressif/esp-idf-ci-action@v1
         with:

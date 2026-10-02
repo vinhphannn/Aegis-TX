@@ -8,9 +8,9 @@ Firmware tự phát triển cho tay cầm điều khiển RC (transmitter), xây
 
 ## Cập nhật firmware
 
-Mở **[Aegis Hub](https://vinhphannn.github.io/Aegis-TX/)** để chọn phiên bản và flash Aegis-TX qua USB trên trình duyệt có Web Serial, hoặc tải firmware Aegis FC. Các bản beta được tách riêng và cần xác nhận trước khi nạp.
+Mở **[AEGIS Configurator](https://vinhphannn.github.io/aegis-web/configurator/)** để chọn phiên bản và flash Aegis-TX qua USB trên trình duyệt có Web Serial, hoặc tải firmware Aegis FC. Các bản beta được tách riêng và cần xác nhận trước khi nạp.
 
-Xem [quy trình phát hành và kiểm thử](docs/RELEASING.md) cho CI/CD, cấu trúc gói và cách chạy Hub cục bộ.
+Xem [quy trình phát hành và kiểm thử](docs/RELEASING.md) cho CI/CD, cấu trúc gói và liên kết tới repo web.
 
 ## Video demo
 

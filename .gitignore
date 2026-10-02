@@ -80,8 +80,4 @@ Desktop.ini
 # Generated release metadata
 version.txt
 release-request.json
-web/vendor/
 site/
-node_modules/
-test-results/
-playwright-report/

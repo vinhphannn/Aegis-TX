@@ -11,7 +11,7 @@ import zlib
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from firmware import package, json_write, prepare, safe_path, normalize_bootloader
-from build_hub import import_tx, import_fc
+from build_catalog import import_tx, import_fc
 
 
 class Packages(unittest.TestCase):
